@@ -114,10 +114,11 @@
   .bar-time { font-size:10px; letter-spacing:0.1em; color:var(--muted); width:34px; flex-shrink:0; }
   .bar-time.right { text-align:right; }
 
-  .progress-track { flex:1; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; position:relative; cursor:pointer; }
+  .progress-track { flex:1; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; position:relative; cursor:pointer; padding:10px 0; margin:-10px 0; box-sizing:content-box; }
   .progress-fill { height:100%; border-radius:2px; background:var(--player-accent,#fff); width:0%; pointer-events:none; transition:background 0.5s; }
-  .progress-thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:11px; height:11px; border-radius:50%; background:var(--player-accent,#fff); left:0%; pointer-events:none; opacity:0; transition:opacity 0.2s,background 0.5s; }
-  .progress-track:hover .progress-thumb { opacity:1; }
+  .progress-thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; background:var(--player-accent,#fff); left:0%; pointer-events:none; opacity:1; transition:background 0.5s; cursor:grab; }
+  .progress-thumb:active { cursor:grabbing; }
+  .progress-track { cursor:pointer; }
 
   .bar-controls-row { display:flex; align-items:center; }
   .bar-song-info { flex:1; min-width:0; padding-right:20px; }
@@ -240,18 +241,18 @@
 
   <!-- TIM -->
   <section class="panel g3" data-f="tim" id="p-tim"
-    data-song-title="Risk It All" data-song-artist="Bruno Mars" data-sc="https://soundcloud.com/brunomars/risk-it-all?si=ae1768fb6428466487ab91756762d3b2&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
+    data-song-title="Risk it all" data-song-artist="Bruno Mars" data-sc="https://soundcloud.com/brunomars/risk-it-all?si=07764f6b3180455cb13382fd3cf81485&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
     <div class="photo-placeholder">TM</div>
     <div style="grid-column:span 2">
       <h2 class="friend-name">Tim</h2>
       <p class="friend-tag">// Dixon</p>
       <p class="friend-bio">glonk, abg magnet</p>
       <div class="stats">
-        <div class="stat"><span class="stat-val">Speed</span><span class="stat-label">0.1</span></div>
-        <div class="stat"><span class="stat-val">Weight</span><span class="stat-label">Over 5000</span></div>
-        <div class="stat"><span class="stat-val">Skin</span><span class="stat-label">Yellow</span></div>
+        <div class="stat"><span class="stat-val">?</span><span class="stat-label">Stat 1</span></div>
+        <div class="stat"><span class="stat-val">?</span><span class="stat-label">Stat 2</span></div>
+        <div class="stat"><span class="stat-val">?</span><span class="stat-label">Stat 3</span></div>
       </div>
-      <div class="tags"><span class="tag">Unidentified Freak</span><span class="tag">Absulote GLONK.</span><span class="tag">ABG/ABB Magnet.</span></div>
+      <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"One day.. I wanna be a JOI Inspector."</p></div>
     </div>
   </section>
@@ -572,6 +573,8 @@ function loadPanel(panel, friendId) {
       widget.setVolume(parseInt(document.getElementById('vol-slider').value));
       widget.play();
       setPlayingUI(true);
+      // Cache duration for instant drag seeking
+      widget.getDuration(d => { cachedDur = d || 0; });
       startProgressPoll();
     });
 
@@ -630,9 +633,18 @@ function setVolume(val) {
 }
 
 function prevTab() {
-  let idx = currentTabIndex - 1;
-  if (idx < 0) idx = tabs.length - 1;
-  tabs[idx].click();
+  // If more than 3 seconds in, restart song. Otherwise go to previous tab.
+  if (!widget) return;
+  widget.getPosition(pos => {
+    if (pos > 3000) {
+      widget.seekTo(0);
+      cachedDur && startProgressPoll();
+    } else {
+      let idx = currentTabIndex - 1;
+      if (idx < 0) idx = tabs.length - 1;
+      tabs[idx].click();
+    }
+  });
 }
 
 function nextTab() {
@@ -645,15 +657,74 @@ function nextTab() {
   tabs[idx].click();
 }
 
-// Seek on progress track click
-document.getElementById('progress-track').addEventListener('click', e => {
+// ── Draggable scrubber ──
+const progressTrack = document.getElementById('progress-track');
+let isDragging = false;
+let cachedDur  = 0;
+
+function cacheDuration() {
   if (!widget) return;
-  widget.getDuration(dur => {
-    if (!dur) return;
-    const rect = document.getElementById('progress-track').getBoundingClientRect();
-    const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    widget.seekTo(pct * dur);
-  });
+  widget.getDuration(d => { cachedDur = d || 0; });
+}
+
+function getPctFromEvent(e) {
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const rect = progressTrack.getBoundingClientRect();
+  return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+}
+
+function applyPct(pct) {
+  document.getElementById('progress-fill').style.width = (pct * 100) + '%';
+  document.getElementById('progress-thumb').style.left  = (pct * 100) + '%';
+  document.getElementById('bar-current').textContent = fmt(pct * cachedDur);
+}
+
+function seekToPct(pct) {
+  if (!widget || !cachedDur) return;
+  widget.seekTo(pct * cachedDur);
+}
+
+// Mouse drag
+progressTrack.addEventListener('mousedown', e => {
+  if (!widget || !cachedDur) return;
+  isDragging = true;
+  clearInterval(progressTimer);
+  applyPct(getPctFromEvent(e));
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  applyPct(getPctFromEvent(e));
+});
+
+document.addEventListener('mouseup', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  seekToPct(getPctFromEvent(e));
+  if (isPlaying) startProgressPoll();
+});
+
+// Touch drag
+progressTrack.addEventListener('touchstart', e => {
+  if (!widget || !cachedDur) return;
+  isDragging = true;
+  clearInterval(progressTimer);
+  applyPct(getPctFromEvent(e));
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  applyPct(getPctFromEvent(e));
+}, { passive: false });
+
+document.addEventListener('touchend', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  const pct = parseFloat(document.getElementById('progress-fill').style.width) / 100;
+  seekToPct(pct);
+  if (isPlaying) startProgressPoll();
 });
 
 // Init on load
