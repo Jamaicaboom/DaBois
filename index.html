@@ -7,215 +7,69 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#0a0a0f; --surface:#111118; --border:rgba(255,255,255,0.07); --text:#e8e8f0; --muted:#555570; }
 
-  :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --border: rgba(255,255,255,0.07);
-    --text: #e8e8f0;
-    --muted: #555570;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; min-height:100vh; overflow-x:hidden; padding-bottom:120px; }
 
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
+    content:''; position:fixed; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:9998; opacity:0.4;
   }
 
-  header { padding: 60px 60px 0; position: relative; }
+  header { padding:60px 60px 0; position:relative; }
+  .site-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(64px,10vw,120px); letter-spacing:0.05em; line-height:0.9; color:#fff; }
+  .site-title span { color:transparent; -webkit-text-stroke:1px rgba(255,255,255,0.3); }
+  .subtitle { margin-top:16px; font-size:11px; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); }
 
-  .site-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(64px, 10vw, 120px);
-    letter-spacing: 0.05em;
-    line-height: 0.9;
-    color: #fff;
-  }
+  .tab-nav { display:flex; padding:48px 60px 0; overflow-x:auto; scrollbar-width:none; position:relative; z-index:10; }
+  .tab-nav::-webkit-scrollbar { display:none; }
+  .tab-btn { background:none; border:none; cursor:pointer; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; padding:14px 20px; color:var(--muted); border-bottom:2px solid transparent; transition:all 0.25s ease; white-space:nowrap; }
+  .tab-btn:hover { color:var(--text); }
+  .tab-btn.active { color:#fff; border-bottom-color:var(--active-accent,#fff); }
+  .tab-btn .n { font-size:9px; opacity:0.4; margin-right:6px; }
 
-  .site-title span {
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(255,255,255,0.3);
-  }
+  .tab-vinyl { display:inline-block; margin-left:6px; font-size:10px; animation:spin 2s linear infinite; opacity:0; transition:opacity 0.3s; }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .tab-btn.playing .tab-vinyl { opacity:1; }
 
-  .subtitle {
-    margin-top: 16px;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+  .divider { height:1px; background:var(--border); margin:0 60px; }
+  .panels { padding:60px; position:relative; min-height:600px; }
+  .panel { display:none; animation:fadeUp 0.4s ease forwards; }
+  .panel.active { display:grid; }
 
-  .tab-nav {
-    display: flex;
-    padding: 48px 60px 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    position: relative;
-    z-index: 10;
-  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
-  .tab-nav::-webkit-scrollbar { display: none; }
+  .g2 { grid-template-columns:300px 1fr; gap:48px; align-items:start; }
+  .g3 { grid-template-columns:1fr 1fr 1fr; gap:32px; }
+  .gf { grid-template-columns:1fr; gap:32px; }
 
-  .tab-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 14px 20px;
-    color: var(--muted);
-    border-bottom: 2px solid transparent;
-    transition: all 0.25s ease;
-    white-space: nowrap;
-  }
+  .photo-placeholder { width:100%; aspect-ratio:3/4; border-radius:2px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:64px; letter-spacing:0.1em; border:1px solid var(--border); }
+  .friend-photo { width:100%; aspect-ratio:3/4; object-fit:cover; border-radius:2px; display:block; filter:grayscale(15%); transition:filter 0.4s; }
+  .friend-photo:hover { filter:grayscale(0%); }
 
-  .tab-btn:hover { color: var(--text); }
+  .friend-name { font-family:'Bebas Neue',sans-serif; font-size:clamp(48px,6vw,88px); line-height:0.9; letter-spacing:0.03em; color:var(--fa,#fff); }
+  .friend-tag { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--muted); margin-top:12px; margin-bottom:28px; }
+  .friend-bio { font-family:'Playfair Display',serif; font-style:italic; font-size:18px; line-height:1.7; color:rgba(232,232,240,0.8); margin-bottom:28px; }
 
-  .tab-btn.active {
-    color: #fff;
-    border-bottom-color: var(--active-accent, #fff);
-  }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:2px; overflow:hidden; margin-bottom:24px; }
+  .stat { background:var(--surface); padding:16px; text-align:center; }
+  .stat-val { font-family:'Bebas Neue',sans-serif; font-size:30px; color:var(--fa,#fff); display:block; }
+  .stat-label { font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); margin-top:4px; display:block; }
 
-  .tab-btn .n {
-    font-size: 9px;
-    opacity: 0.4;
-    margin-right: 6px;
-  }
+  .tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+  .tag { font-size:10px; letter-spacing:0.15em; text-transform:uppercase; padding:5px 12px; border:1px solid var(--fa,var(--border)); color:var(--fa,var(--muted)); border-radius:100px; opacity:0.7; }
 
-  .divider { height: 1px; background: var(--border); margin: 0 60px; }
+  .quote-block { border-left:2px solid var(--fa,var(--muted)); padding:14px 22px; margin:20px 0; }
+  .quote-block p { font-family:'Playfair Display',serif; font-style:italic; font-size:17px; line-height:1.6; color:rgba(232,232,240,0.6); }
 
-  .panels { padding: 60px; position: relative; min-height: 600px; }
+  .mcard { background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:22px; transition:border-color 0.25s,transform 0.25s; }
+  .mcard:hover { border-color:var(--fa,var(--border)); transform:translateY(-3px); }
+  .mcard h3 { font-family:'Bebas Neue',sans-serif; font-size:19px; letter-spacing:0.08em; color:var(--fa,#fff); margin-bottom:8px; }
+  .mcard p { font-size:12px; line-height:1.8; color:rgba(232,232,240,0.55); }
 
-  .panel { display: none; animation: fadeUp 0.4s ease forwards; }
-  .panel.active { display: grid; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .g2 { grid-template-columns: 300px 1fr; gap: 48px; align-items: start; }
-  .g3 { grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
-  .gf { grid-template-columns: 1fr; gap: 32px; }
-
-  .photo-placeholder {
-    width: 100%;
-    aspect-ratio: 3/4;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 64px;
-    letter-spacing: 0.1em;
-    border: 1px solid var(--border);
-  }
-
-  .friend-photo {
-    width: 100%;
-    aspect-ratio: 3/4;
-    object-fit: cover;
-    border-radius: 2px;
-    display: block;
-    filter: grayscale(15%);
-    transition: filter 0.4s;
-  }
-
-  .friend-photo:hover { filter: grayscale(0%); }
-
-  .friend-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 6vw, 88px);
-    line-height: 0.9;
-    letter-spacing: 0.03em;
-    color: var(--fa, #fff);
-  }
-
-  .friend-tag {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 12px;
-    margin-bottom: 28px;
-  }
-
-  .friend-bio {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 18px;
-    line-height: 1.7;
-    color: rgba(232,232,240,0.8);
-    margin-bottom: 28px;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
-  .stat { background: var(--surface); padding: 16px; text-align: center; }
-  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--fa, #fff); display: block; }
-  .stat-label { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-top: 4px; display: block; }
-
-  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-
-  .tag {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border: 1px solid var(--fa, var(--border));
-    color: var(--fa, var(--muted));
-    border-radius: 100px;
-    opacity: 0.7;
-  }
-
-  .quote-block { border-left: 2px solid var(--fa, var(--muted)); padding: 14px 22px; margin: 20px 0; }
-  .quote-block p { font-family: 'Playfair Display', serif; font-style: italic; font-size: 17px; line-height: 1.6; color: rgba(232,232,240,0.6); }
-
-  .mcard {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 22px;
-    transition: border-color 0.25s, transform 0.25s;
-  }
-
-  .mcard:hover { border-color: var(--fa, var(--border)); transform: translateY(-3px); }
-  .mcard h3 { font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 0.08em; color: var(--fa, #fff); margin-bottom: 8px; }
-  .mcard p { font-size: 12px; line-height: 1.8; color: rgba(232,232,240,0.55); }
-
-  .panel[data-f]::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: var(--fb);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .panel > * { position: relative; z-index: 1; }
+  .panel[data-f]::before { content:''; position:fixed; inset:0; background:var(--fb); pointer-events:none; z-index:0; }
+  .panel > * { position:relative; z-index:1; }
 
   /* THEMES */
   [data-f="miggy"]   { --fa:#b794f4; --fb:radial-gradient(ellipse at top right,rgba(183,148,244,.09) 0%,transparent 60%); }
@@ -245,16 +99,60 @@
   [data-f="praveen"] { --fa:#fbb6ce; --fb:radial-gradient(ellipse at bottom left,rgba(251,182,206,.07) 0%,transparent 60%); }
   [data-f="praveen"] .photo-placeholder { background:linear-gradient(135deg,#1e0010,#3d0021);color:#fbb6ce; }
 
+  /* ── MUSIC BAR ── */
+  #music-bar {
+    position:fixed; bottom:0; left:0; right:0; z-index:9999;
+    background:rgba(10,10,15,0.94);
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border-top:1px solid rgba(255,255,255,0.08);
+    padding:0 32px; height:82px;
+    display:flex; flex-direction:column; justify-content:center; gap:10px;
+    transition:border-color 0.5s;
+  }
+
+  .bar-progress-row { display:flex; align-items:center; gap:12px; }
+  .bar-time { font-size:10px; letter-spacing:0.1em; color:var(--muted); width:34px; flex-shrink:0; }
+  .bar-time.right { text-align:right; }
+
+  .progress-track { flex:1; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; position:relative; cursor:pointer; }
+  .progress-fill { height:100%; border-radius:2px; background:var(--player-accent,#fff); width:0%; pointer-events:none; transition:background 0.5s; }
+  .progress-thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:11px; height:11px; border-radius:50%; background:var(--player-accent,#fff); left:0%; pointer-events:none; opacity:0; transition:opacity 0.2s,background 0.5s; }
+  .progress-track:hover .progress-thumb { opacity:1; }
+
+  .bar-controls-row { display:flex; align-items:center; }
+  .bar-song-info { flex:1; min-width:0; padding-right:20px; }
+  .bar-song-title { font-size:12px; color:#fff; letter-spacing:0.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-song-artist { font-size:10px; color:var(--muted); letter-spacing:0.1em; margin-top:2px; }
+
+  .ctrl-btns { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+  .ctrl-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.45); padding:8px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:color 0.2s,background 0.2s; }
+  .ctrl-btn:hover { color:#fff; background:rgba(255,255,255,0.06); }
+  .ctrl-btn.play-btn { width:38px; height:38px; background:#fff; color:#000; border-radius:50%; margin:0 6px; }
+  .ctrl-btn.play-btn:hover { background:rgba(255,255,255,0.85); color:#000; }
+
+  .bar-volume { display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:24px; }
+  .vol-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.45); display:flex; align-items:center; padding:4px; transition:color 0.2s; }
+  .vol-btn:hover { color:#fff; }
+  .vol-slider { -webkit-appearance:none; appearance:none; width:72px; height:3px; border-radius:2px; background:rgba(255,255,255,0.15); outline:none; cursor:pointer; }
+  .vol-slider::-webkit-slider-thumb { -webkit-appearance:none; width:10px; height:10px; border-radius:50%; background:var(--player-accent,#fff); cursor:pointer; transition:background 0.5s; }
+  .vol-slider::-moz-range-thumb { width:10px; height:10px; border-radius:50%; background:var(--player-accent,#fff); cursor:pointer; border:none; }
+
+  /* SoundCloud hidden iframe */
+  #sc-iframe { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; left:-9999px; }
+
+  /* "no song" state dims the bar */
+  #music-bar.no-song { opacity:0.35; pointer-events:none; }
+  #music-bar.sc-mode .progress-track { cursor:default; }
+
   @media (max-width:900px) {
     header,.tab-nav,.divider,.panels { padding-left:24px;padding-right:24px; }
     header { padding-top:40px; }
     .g2 { grid-template-columns:1fr; }
     .g3 { grid-template-columns:1fr 1fr; }
+    #music-bar { padding:0 16px; }
+    .bar-volume { display:none; }
   }
-  @media (max-width:600px) {
-    .g3 { grid-template-columns:1fr; }
-    .stats { grid-template-columns:repeat(2,1fr); }
-  }
+  @media (max-width:600px) { .g3{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
 <body>
@@ -265,27 +163,30 @@
 </header>
 
 <nav class="tab-nav">
-  <button class="tab-btn active" onclick="sw('miggy',this)"   style="--active-accent:#b794f4"><span class="n">01</span>Miggy</button>
-  <button class="tab-btn"        onclick="sw('prince',this)"  style="--active-accent:#ffd700"><span class="n">02</span>Prince</button>
-  <button class="tab-btn"        onclick="sw('zack',this)"    style="--active-accent:#4ecdc4"><span class="n">03</span>Zack</button>
-  <button class="tab-btn"        onclick="sw('tim',this)"     style="--active-accent:#fc8181"><span class="n">04</span>Tim</button>
-  <button class="tab-btn"        onclick="sw('jaden',this)"   style="--active-accent:#68d391"><span class="n">05</span>Jaden</button>
-  <button class="tab-btn"        onclick="sw('aeo',this)"     style="--active-accent:#f6ad55"><span class="n">06</span>Aeo</button>
-  <button class="tab-btn"        onclick="sw('matthew',this)" style="--active-accent:#63b3ed"><span class="n">07</span>Matthew</button>
-  <button class="tab-btn"        onclick="sw('lucas',this)"   style="--active-accent:#f687b3"><span class="n">08</span>Lucas</button>
-  <button class="tab-btn"        onclick="sw('leon',this)"    style="--active-accent:#76e4f7"><span class="n">09</span>Leon</button>
-  <button class="tab-btn"        onclick="sw('johan',this)"   style="--active-accent:#d6bcfa"><span class="n">10</span>Johan</button>
-  <button class="tab-btn"        onclick="sw('xavier',this)"  style="--active-accent:#ff6b35"><span class="n">11</span>Xavier</button>
-  <button class="tab-btn"        onclick="sw('miguel',this)"  style="--active-accent:#9ae6b4"><span class="n">12</span>Miguel</button>
-  <button class="tab-btn"        onclick="sw('praveen',this)" style="--active-accent:#fbb6ce"><span class="n">13</span>Praveen</button>
+  <button class="tab-btn active" onclick="sw('miggy',this)"   style="--active-accent:#b794f4"><span class="n">01</span>Miggy<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('prince',this)"  style="--active-accent:#ffd700"><span class="n">02</span>Prince<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('zack',this)"    style="--active-accent:#4ecdc4"><span class="n">03</span>Zack<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('tim',this)"     style="--active-accent:#fc8181"><span class="n">04</span>Tim<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('jaden',this)"   style="--active-accent:#68d391"><span class="n">05</span>Jaden<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('aeo',this)"     style="--active-accent:#f6ad55"><span class="n">06</span>Aeo<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('matthew',this)" style="--active-accent:#63b3ed"><span class="n">07</span>Matthew<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('lucas',this)"   style="--active-accent:#f687b3"><span class="n">08</span>Lucas<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('leon',this)"    style="--active-accent:#76e4f7"><span class="n">09</span>Leon<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('johan',this)"   style="--active-accent:#d6bcfa"><span class="n">10</span>Johan<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('xavier',this)"  style="--active-accent:#ff6b35"><span class="n">11</span>Xavier<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('miguel',this)"  style="--active-accent:#9ae6b4"><span class="n">12</span>Miguel<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('praveen',this)" style="--active-accent:#fbb6ce"><span class="n">13</span>Praveen<span class="tab-vinyl">◉</span></button>
 </nav>
 
 <div class="divider"></div>
 
 <main class="panels">
 
-  <!-- MIGGY -->
-  <section class="panel g2 active" data-f="miggy" id="p-miggy">
+  <!-- ═══ MIGGY — SoundCloud ═══ -->
+  <section class="panel g2 active" data-f="miggy" id="p-miggy"
+    data-song-title="Lover, You Should've Come Over"
+    data-song-artist="Jeff Buckley"
+    data-sc="https://soundcloud.com/jeff-buckley-official/lover-you-shouldve-come-over">
     <div class="photo-placeholder">MG</div>
     <div>
       <h2 class="friend-name">Miggy</h2>
@@ -302,7 +203,8 @@
   </section>
 
   <!-- PRINCE -->
-  <section class="panel g2" data-f="prince" id="p-prince">
+  <section class="panel g2" data-f="prince" id="p-prince"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">PR</div>
     <div>
       <h2 class="friend-name">Prince</h2>
@@ -319,7 +221,8 @@
   </section>
 
   <!-- ZACK -->
-  <section class="panel g2" data-f="zack" id="p-zack">
+  <section class="panel g2" data-f="zack" id="p-zack"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">ZK</div>
     <div>
       <h2 class="friend-name">Zack</h2>
@@ -336,7 +239,8 @@
   </section>
 
   <!-- TIM -->
-  <section class="panel g3" data-f="tim" id="p-tim">
+  <section class="panel g3" data-f="tim" id="p-tim"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">TM</div>
     <div style="grid-column:span 2">
       <h2 class="friend-name">Tim</h2>
@@ -353,7 +257,8 @@
   </section>
 
   <!-- JADEN -->
-  <section class="panel g2" data-f="jaden" id="p-jaden">
+  <section class="panel g2" data-f="jaden" id="p-jaden"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">JD</div>
     <div>
       <h2 class="friend-name">Jaden</h2>
@@ -370,7 +275,8 @@
   </section>
 
   <!-- AEO -->
-  <section class="panel gf" data-f="aeo" id="p-aeo">
+  <section class="panel gf" data-f="aeo" id="p-aeo"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
       <div>
         <h2 class="friend-name">Aeo</h2>
@@ -388,7 +294,8 @@
   </section>
 
   <!-- MATTHEW -->
-  <section class="panel g2" data-f="matthew" id="p-matthew">
+  <section class="panel g2" data-f="matthew" id="p-matthew"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">MT</div>
     <div>
       <h2 class="friend-name">Matthew</h2>
@@ -405,7 +312,8 @@
   </section>
 
   <!-- LUCAS -->
-  <section class="panel g3" data-f="lucas" id="p-lucas">
+  <section class="panel g3" data-f="lucas" id="p-lucas"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">LC</div>
     <div style="grid-column:span 2">
       <h2 class="friend-name">Lucas</h2>
@@ -422,7 +330,8 @@
   </section>
 
   <!-- LEON -->
-  <section class="panel g2" data-f="leon" id="p-leon">
+  <section class="panel g2" data-f="leon" id="p-leon"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">LN</div>
     <div>
       <h2 class="friend-name">Leon</h2>
@@ -439,7 +348,8 @@
   </section>
 
   <!-- JOHAN -->
-  <section class="panel gf" data-f="johan" id="p-johan">
+  <section class="panel gf" data-f="johan" id="p-johan"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
       <div class="photo-placeholder">JH</div>
       <div>
@@ -457,7 +367,8 @@
   </section>
 
   <!-- XAVIER -->
-  <section class="panel g2" data-f="xavier" id="p-xavier">
+  <section class="panel g2" data-f="xavier" id="p-xavier"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">XV</div>
     <div>
       <h2 class="friend-name">Xavier</h2>
@@ -474,7 +385,8 @@
   </section>
 
   <!-- MIGUEL -->
-  <section class="panel g2" data-f="miguel" id="p-miguel">
+  <section class="panel g2" data-f="miguel" id="p-miguel"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">ML</div>
     <div>
       <h2 class="friend-name">Miguel</h2>
@@ -491,7 +403,8 @@
   </section>
 
   <!-- PRAVEEN -->
-  <section class="panel g3" data-f="praveen" id="p-praveen">
+  <section class="panel g3" data-f="praveen" id="p-praveen"
+    data-song-title="Add Song Title" data-song-artist="Add Artist" data-sc="">
     <div class="photo-placeholder">PV</div>
     <div style="grid-column:span 2">
       <h2 class="friend-name">Praveen</h2>
@@ -509,14 +422,246 @@
 
 </main>
 
-<script>
-function sw(id, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('p-' + id).classList.add('active');
-}
-</script>
+<!-- Hidden SoundCloud iframe -->
+<iframe id="sc-iframe" allow="autoplay" src=""></iframe>
 
+<!-- ── MUSIC BAR ── -->
+<div id="music-bar" class="no-song">
+  <div class="bar-progress-row">
+    <span class="bar-time" id="bar-current">0:00</span>
+    <div class="progress-track" id="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+      <div class="progress-thumb" id="progress-thumb"></div>
+    </div>
+    <span class="bar-time right" id="bar-duration">0:00</span>
+  </div>
+  <div class="bar-controls-row">
+    <div class="bar-song-info">
+      <div class="bar-song-title" id="bar-title">No song loaded</div>
+      <div class="bar-song-artist" id="bar-artist">—</div>
+    </div>
+    <div class="ctrl-btns">
+      <!-- Shuffle -->
+      <button class="ctrl-btn" id="btn-shuffle" title="Shuffle" onclick="toggleShuffle()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+      </button>
+      <!-- Prev -->
+      <button class="ctrl-btn" title="Prev" onclick="prevTab()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <!-- Play/Pause -->
+      <button class="ctrl-btn play-btn" id="btn-play" title="Play / Pause" onclick="togglePlay()">
+        <svg id="icon-play"  width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg id="icon-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <!-- Next -->
+      <button class="ctrl-btn" title="Next" onclick="nextTab()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <!-- Loop -->
+      <button class="ctrl-btn" id="btn-loop" title="Loop" onclick="toggleLoop()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      </button>
+    </div>
+    <div class="bar-volume">
+      <button class="vol-btn" id="btn-mute" onclick="toggleMute()" title="Mute">
+        <svg id="icon-vol"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <svg id="icon-mute" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      </button>
+      <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="80" oninput="setVolume(this.value)">
+    </div>
+  </div>
+</div>
+
+<!-- SoundCloud Widget API -->
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+const tabs   = [...document.querySelectorAll('.tab-btn')];
+const panels = [...document.querySelectorAll('.panel[data-f]')];
+const bar    = document.getElementById('music-bar');
+const scIframe = document.getElementById('sc-iframe');
+
+const accents = {
+  miggy:'#b794f4', prince:'#ffd700', zack:'#4ecdc4', tim:'#fc8181',
+  jaden:'#68d391', aeo:'#f6ad55', matthew:'#63b3ed', lucas:'#f687b3',
+  leon:'#76e4f7', johan:'#d6bcfa', xavier:'#ff6b35', miguel:'#9ae6b4', praveen:'#fbb6ce'
+};
+
+let currentTabIndex = 0;
+let isShuffled = false;
+let isLooped   = false;
+let isMuted    = false;
+let isPlaying  = false;
+let widget     = null;
+let progressTimer = null;
+
+function applyAccent(id) {
+  const c = accents[id] || '#fff';
+  document.documentElement.style.setProperty('--player-accent', c);
+  bar.style.borderTopColor = c + '66';
+}
+
+function fmt(ms) {
+  const s = Math.floor(ms / 1000);
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+}
+
+function setPlayingUI(playing) {
+  isPlaying = playing;
+  document.getElementById('icon-play').style.display  = playing ? 'none'  : 'block';
+  document.getElementById('icon-pause').style.display = playing ? 'block' : 'none';
+  tabs.forEach(b => b.classList.remove('playing'));
+  if (playing) tabs[currentTabIndex]?.classList.add('playing');
+}
+
+function startProgressPoll() {
+  clearInterval(progressTimer);
+  if (!widget) return;
+  progressTimer = setInterval(() => {
+    widget.getPosition(pos => {
+      widget.getDuration(dur => {
+        if (!dur) return;
+        const pct = (pos / dur) * 100;
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-thumb').style.left = pct + '%';
+        document.getElementById('bar-current').textContent = fmt(pos);
+        document.getElementById('bar-duration').textContent = fmt(dur);
+      });
+    });
+  }, 500);
+}
+
+function loadPanel(panel, friendId) {
+  const sc     = panel.dataset.sc     || '';
+  const title  = panel.dataset.songTitle  || 'No song assigned';
+  const artist = panel.dataset.songArtist || '—';
+
+  document.getElementById('bar-title').textContent  = title;
+  document.getElementById('bar-artist').textContent = artist;
+  applyAccent(friendId);
+
+  // Reset progress
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-thumb').style.left = '0%';
+  document.getElementById('bar-current').textContent = '0:00';
+  document.getElementById('bar-duration').textContent = '0:00';
+  clearInterval(progressTimer);
+
+  if (!sc) {
+    bar.classList.add('no-song');
+    setPlayingUI(false);
+    if (widget) widget.pause();
+    return;
+  }
+
+  bar.classList.remove('no-song');
+
+  // Build iframe src
+  const embedUrl = 'https://w.soundcloud.com/player/?url=' +
+    encodeURIComponent(sc) +
+    '&color=' + encodeURIComponent(accents[friendId] || '#ffffff').replace('#','%23') +
+    '&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&buying=false&sharing=false&download=false&show_artwork=false';
+
+  scIframe.src = embedUrl;
+
+  // Reinit widget after iframe loads
+  scIframe.onload = () => {
+    widget = SC.Widget(scIframe);
+
+    widget.bind(SC.Widget.Events.READY, () => {
+      widget.setVolume(parseInt(document.getElementById('vol-slider').value));
+      widget.play();
+      setPlayingUI(true);
+      startProgressPoll();
+    });
+
+    widget.bind(SC.Widget.Events.PLAY,  () => setPlayingUI(true));
+    widget.bind(SC.Widget.Events.PAUSE, () => setPlayingUI(false));
+    widget.bind(SC.Widget.Events.FINISH, () => {
+      setPlayingUI(false);
+      clearInterval(progressTimer);
+      if (!isLooped) nextTab();
+      else { widget.seekTo(0); widget.play(); }
+    });
+  };
+
+  tabs.forEach(b => b.classList.remove('playing'));
+  tabs[currentTabIndex].classList.add('playing');
+}
+
+function sw(id, btn) {
+  tabs.forEach(b => b.classList.remove('active','playing'));
+  panels.forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const panel = document.getElementById('p-' + id);
+  panel.classList.add('active');
+  currentTabIndex = tabs.indexOf(btn);
+  loadPanel(panel, id);
+}
+
+function togglePlay() {
+  if (!widget || bar.classList.contains('no-song')) return;
+  if (isPlaying) { widget.pause(); setPlayingUI(false); }
+  else           { widget.play();  setPlayingUI(true);  startProgressPoll(); }
+}
+
+function toggleShuffle() {
+  isShuffled = !isShuffled;
+  document.getElementById('btn-shuffle').style.color = isShuffled ? 'var(--player-accent)' : '';
+}
+
+function toggleLoop() {
+  isLooped = !isLooped;
+  document.getElementById('btn-loop').style.color = isLooped ? 'var(--player-accent)' : '';
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  if (widget) widget.setVolume(isMuted ? 0 : parseInt(document.getElementById('vol-slider').value));
+  document.getElementById('icon-vol').style.display  = isMuted ? 'none'  : 'block';
+  document.getElementById('icon-mute').style.display = isMuted ? 'block' : 'none';
+}
+
+function setVolume(val) {
+  if (widget) widget.setVolume(parseInt(val));
+  const zero = val == 0;
+  document.getElementById('icon-vol').style.display  = zero ? 'none'  : 'block';
+  document.getElementById('icon-mute').style.display = zero ? 'block' : 'none';
+}
+
+function prevTab() {
+  let idx = currentTabIndex - 1;
+  if (idx < 0) idx = tabs.length - 1;
+  tabs[idx].click();
+}
+
+function nextTab() {
+  let idx;
+  if (isShuffled) {
+    do { idx = Math.floor(Math.random() * tabs.length); } while (idx === currentTabIndex && tabs.length > 1);
+  } else {
+    idx = (currentTabIndex + 1) % tabs.length;
+  }
+  tabs[idx].click();
+}
+
+// Seek on progress track click
+document.getElementById('progress-track').addEventListener('click', e => {
+  if (!widget) return;
+  widget.getDuration(dur => {
+    if (!dur) return;
+    const rect = document.getElementById('progress-track').getBoundingClientRect();
+    const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    widget.seekTo(pct * dur);
+  });
+});
+
+// Init on load
+window.addEventListener('DOMContentLoaded', () => {
+  applyAccent('miggy');
+  const firstPanel = document.getElementById('p-miggy');
+  loadPanel(firstPanel, 'miggy');
+});
+</script>
 </body>
 </html>
