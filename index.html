@@ -68,6 +68,110 @@
   .mcard h3 { font-family:'Bebas Neue',sans-serif; font-size:19px; letter-spacing:0.08em; color:var(--fa,#fff); margin-bottom:8px; }
   .mcard p { font-size:12px; line-height:1.8; color:rgba(232,232,240,0.55); }
 
+  /* ── GALLERY ── */
+  .gallery-section {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+  }
+
+  .gallery-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .gallery-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 6px;
+  }
+
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(10%);
+    transition: filter 0.3s, transform 0.3s;
+  }
+
+  .gallery-item:hover img {
+    filter: grayscale(0%);
+    transform: scale(1.04);
+  }
+
+  /* empty slot */
+  .gallery-item.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    border-style: dashed;
+    cursor: default;
+  }
+
+  /* Lightbox */
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0,0,0,0.92);
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+
+  #lightbox.open { display: flex; }
+
+  #lightbox img {
+    max-width: 90vw;
+    max-height: 88vh;
+    object-fit: contain;
+    border-radius: 2px;
+    box-shadow: 0 0 80px rgba(0,0,0,0.8);
+    cursor: default;
+  }
+
+  #lightbox-close {
+    position: absolute;
+    top: 24px; right: 28px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  #lightbox-close:hover { color: #fff; }
+
   .panel[data-f]::before { content:''; position:fixed; inset:0; background:var(--fb); pointer-events:none; z-index:0; }
   .panel > * { position:relative; z-index:1; }
 
@@ -84,8 +188,8 @@
   [data-f="jaden"]   .photo-placeholder { background:linear-gradient(135deg,#001e0a,#003d14);color:#68d391; }
   [data-f="aeo"]     { --fa:#f6ad55; --fb:radial-gradient(ellipse at top,rgba(246,173,85,.08) 0%,transparent 60%); }
   [data-f="aeo"]     .photo-placeholder { background:linear-gradient(135deg,#1e0f00,#3d1f00);color:#f6ad55; }
-  [data-f="zaire"]     { --fa:#f6ad55; --fb:radial-gradient(ellipse at top,rgba(246,173,85,.08) 0%,transparent 60%); }
-  [data-f="zaire"]     .photo-placeholder { background:linear-gradient(135deg,#1e0f00,#3d1f00);color:#f6ad55; }
+  [data-f="zaire"]   { --fa:#f6ad55; --fb:radial-gradient(ellipse at top,rgba(246,173,85,.08) 0%,transparent 60%); }
+  [data-f="zaire"]   .photo-placeholder { background:linear-gradient(135deg,#1e0f00,#3d1f00);color:#f6ad55; }
   [data-f="matthew"] { --fa:#63b3ed; --fb:radial-gradient(ellipse at bottom,rgba(99,179,237,.08) 0%,transparent 60%); }
   [data-f="matthew"] .photo-placeholder { background:linear-gradient(135deg,#000d1e,#001a3d);color:#63b3ed; }
   [data-f="lucas"]   { --fa:#f687b3; --fb:radial-gradient(ellipse at right,rgba(246,135,179,.07) 0%,transparent 60%); }
@@ -118,9 +222,7 @@
 
   .progress-track { flex:1; height:3px; background:rgba(255,255,255,0.1); border-radius:2px; position:relative; cursor:pointer; padding:10px 0; margin:-10px 0; box-sizing:content-box; }
   .progress-fill { height:100%; border-radius:2px; background:var(--player-accent,#fff); width:0%; pointer-events:none; transition:background 0.5s; }
-  .progress-thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; background:var(--player-accent,#fff); left:0%; pointer-events:none; opacity:1; transition:background 0.5s; cursor:grab; }
-  .progress-thumb:active { cursor:grabbing; }
-  .progress-track { cursor:pointer; }
+  .progress-thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; background:var(--player-accent,#fff); left:0%; pointer-events:none; opacity:1; transition:background 0.5s; }
 
   .bar-controls-row { display:flex; align-items:center; }
   .bar-song-info { flex:1; min-width:0; padding-right:20px; }
@@ -140,12 +242,8 @@
   .vol-slider::-webkit-slider-thumb { -webkit-appearance:none; width:10px; height:10px; border-radius:50%; background:var(--player-accent,#fff); cursor:pointer; transition:background 0.5s; }
   .vol-slider::-moz-range-thumb { width:10px; height:10px; border-radius:50%; background:var(--player-accent,#fff); cursor:pointer; border:none; }
 
-  /* SoundCloud hidden iframe */
   #sc-iframe { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; left:-9999px; }
-
-  /* "no song" state dims the bar */
   #music-bar.no-song { opacity:0.35; pointer-events:none; }
-  #music-bar.sc-mode .progress-track { cursor:default; }
 
   @media (max-width:900px) {
     header,.tab-nav,.divider,.panels { padding-left:24px;padding-right:24px; }
@@ -154,6 +252,7 @@
     .g3 { grid-template-columns:1fr 1fr; }
     #music-bar { padding:0 16px; }
     .bar-volume { display:none; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
   }
   @media (max-width:600px) { .g3{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} }
 </style>
@@ -172,7 +271,7 @@
   <button class="tab-btn"        onclick="sw('tim',this)"     style="--active-accent:#fc8181"><span class="n">04</span>Tim<span class="tab-vinyl">◉</span></button>
   <button class="tab-btn"        onclick="sw('jaden',this)"   style="--active-accent:#68d391"><span class="n">05</span>Jaden<span class="tab-vinyl">◉</span></button>
   <button class="tab-btn"        onclick="sw('aeo',this)"     style="--active-accent:#f6ad55"><span class="n">06</span>Aeo<span class="tab-vinyl">◉</span></button>
-  <button class="tab-btn"        onclick="sw('zaire',this)"     style="--active-accent:#f6ad55"><span class="n">07</span>Zaire<span class="tab-vinyl">◉</span></button>
+  <button class="tab-btn"        onclick="sw('zaire',this)"   style="--active-accent:#e8a838"><span class="n">07</span>Zaire<span class="tab-vinyl">◉</span></button>
   <button class="tab-btn"        onclick="sw('matthew',this)" style="--active-accent:#63b3ed"><span class="n">08</span>Matthew<span class="tab-vinyl">◉</span></button>
   <button class="tab-btn"        onclick="sw('lucas',this)"   style="--active-accent:#f687b3"><span class="n">09</span>Lucas<span class="tab-vinyl">◉</span></button>
   <button class="tab-btn"        onclick="sw('leon',this)"    style="--active-accent:#76e4f7"><span class="n">10</span>Leon<span class="tab-vinyl">◉</span></button>
@@ -186,7 +285,7 @@
 
 <main class="panels">
 
-  <!-- ═══ MIGGY — SoundCloud ═══ -->
+  <!-- MIGGY -->
   <section class="panel g2 active" data-f="miggy" id="p-miggy"
     data-song-title="Lover, You Should've Come Over"
     data-song-artist="Jeff Buckley"
@@ -204,29 +303,54 @@
       <div class="tags"><span class="tag">Hungry</span><span class="tag">Mobile</span><span class="tag">Miggy</span></div>
       <div class="quote-block"><p>"To be number one, you have to be odd"</p></div>
     </div>
+    <!-- GALLERY — add image URLs inside the gallery-item divs below -->
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
   <!-- PRINCE -->
   <section class="panel g2" data-f="prince" id="p-prince"
-    data-song-title="Potholderz" data-song-artist="MF DOOM" data-sc="https://soundcloud.com/mf-doom-official/potholderz-feat-count-bass-d?si=aaba5d045a4e438c94d9265cb1d2cd78&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
+    data-song-title="Potholderz" data-song-artist="MF DOOM"
+    data-sc="https://soundcloud.com/mf-doom-official/potholderz-feat-count-bass-d?si=aaba5d045a4e438c94d9265cb1d2cd78">
     <img src="https://image2url.com/r2/default/images/1772415963311-11bfb1b6-fa16-43cd-b74c-90eac9d9636d.png" alt="Prince" class="friend-photo">
     <div>
       <h2 class="friend-name">Prince</h2>
       <p class="friend-tag">// preak/prince</p>
       <p class="friend-bio">𝔣𝔢𝔩𝔩𝔞 𝔱𝔥𝔞𝔱 𝔩𝔦𝔨𝔢𝔰 𝔱𝔬 𝔭𝔩𝔞𝔶 𝔞𝔯𝔬𝔲𝔫𝔡.</p>
       <div class="stats">
-        <div class="stat"><span class="stat-val">Achivement</span><span class="stat-label">Gold 1</span></div>
+        <div class="stat"><span class="stat-val">Achievement</span><span class="stat-label">Gold 1</span></div>
         <div class="stat"><span class="stat-val">Goal</span><span class="stat-label">Plat 3</span></div>
         <div class="stat"><span class="stat-val">Crashout</span><span class="stat-label">Idfk</span></div>
       </div>
       <div class="tags"><span class="tag">gluttonous</span><span class="tag">pc</span><span class="tag">preak</span></div>
       <div class="quote-block"><p>"The struggle itself towards the heights is enough to fill a man's heart. One must imagine Sisyphus happy"</p></div>
     </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
   <!-- ZACK -->
   <section class="panel g2" data-f="zack" id="p-zack"
-    data-song-title="Monopoly Money" data-song-artist="Moon Walker" data-sc="https://soundcloud.com/user-974937667/monopoly-money?si=1b58737c15b444d68a8066ee984c34d8&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
+    data-song-title="Monopoly Money" data-song-artist="Moon Walker"
+    data-sc="https://soundcloud.com/user-974937667/monopoly-money?si=1b58737c15b444d68a8066ee984c34d8">
     <img src="https://image2url.com/r2/default/images/1772492825689-7bb6f91d-fb69-44b9-a548-59da7c2ff34c.png" alt="Zack" class="friend-photo">
     <div>
       <h2 class="friend-name">Zack</h2>
@@ -240,12 +364,24 @@
       <div class="tags"><span class="tag">Poor Boy</span><span class="tag">Food Boy</span><span class="tag">Nerd Boy</span></div>
       <div class="quote-block"><p>"For peace and freedom across the world for all to enjoy"</p></div>
     </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
   <!-- TIM -->
   <section class="panel g3" data-f="tim" id="p-tim"
-    data-song-title="Risk it all" data-song-artist="Bruno Mars" data-sc="https://soundcloud.com/brunomars/risk-it-all?si=07764f6b3180455cb13382fd3cf81485&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
-    <img src="https://image2url.com/r2/default/images/1772416155472-a46b6479-e3ce-4fc0-a3ab-9686e18eadb1.png" alt="Miggy" class="friend-photo">
+    data-song-title="Risk it all" data-song-artist="Bruno Mars"
+    data-sc="https://soundcloud.com/brunomars/risk-it-all?si=07764f6b3180455cb13382fd3cf81485">
+    <img src="https://image2url.com/r2/default/images/1772416155472-a46b6479-e3ce-4fc0-a3ab-9686e18eadb1.png" alt="Tim" class="friend-photo">
     <div style="grid-column:span 2">
       <h2 class="friend-name">Tim</h2>
       <p class="friend-tag">// Dixon</p>
@@ -257,6 +393,17 @@
       </div>
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"One day.. I wanna be a JOI Inspector."</p></div>
+    </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
     </div>
   </section>
 
@@ -276,6 +423,17 @@
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"PlaceHolder"</p></div>
     </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
   <!-- AEO -->
@@ -290,19 +448,25 @@
       </div>
       <div class="photo-placeholder">AO</div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-      <div class="mcard"><h3>Memory 1</h3><p>PlaceHolder</p></div>
-      <div class="mcard"><h3>Memory 2</h3><p>PlaceHolder</p></div>
-      <div class="mcard"><h3>Memory 3</h3><p>PlaceHolder</p></div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
     </div>
   </section>
 
-  <!-- ═══ Zaire — SoundCloud ═══ -->
-  <section class="panel g2 active" data-f="zaire" id="p-zaire"
+  <!-- ZAIRE -->
+  <section class="panel g2" data-f="zaire" id="p-zaire"
     data-song-title="Superpowers"
     data-song-artist="Daniel Caesar"
-    data-sc="https://soundcloud.com/danielcaesar/superpowers?si=32ce4bbf3ba64de99a86836e62604cec&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
-    <img src="https://image2url.com/r2/default/images/1772493590733-fd4060b6-172f-4932-a810-8b58e60dab50.blob" alt="Miggy" class="friend-photo">
+    data-sc="https://soundcloud.com/danielcaesar/superpowers?si=32ce4bbf3ba64de99a86836e62604cec">
+    <img src="https://image2url.com/r2/default/images/1772493590733-fd4060b6-172f-4932-a810-8b58e60dab50.blob" alt="Zaire" class="friend-photo">
     <div>
       <h2 class="friend-name">Zaire</h2>
       <p class="friend-tag">// Hockey Boy</p>
@@ -310,10 +474,21 @@
       <div class="stats">
         <div class="stat"><span class="stat-val">Badminton</span><span class="stat-label">YES</span></div>
         <div class="stat"><span class="stat-val">Coding</span><span class="stat-label">Very</span></div>
-        <div class="stat"><span class="stat-val">Favourite Food</span><span class="stat-label">Burger</span></div>
+        <div class="stat"><span class="stat-val">Fav Food</span><span class="stat-label">Burger</span></div>
       </div>
       <div class="tags"><span class="tag">Hungry</span><span class="tag">PC</span><span class="tag">Somting</span></div>
       <div class="quote-block"><p>"Too sleepy, too tired, too lazy."</p></div>
+    </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
     </div>
   </section>
 
@@ -333,6 +508,17 @@
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"PlaceHolder"</p></div>
     </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
   <!-- LUCAS -->
@@ -350,6 +536,17 @@
       </div>
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"PlaceHolder"</p></div>
+    </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
     </div>
   </section>
 
@@ -369,6 +566,17 @@
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"PlaceHolder"</p></div>
     </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
   <!-- JOHAN -->
@@ -384,15 +592,23 @@
         <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
-      <div class="mcard"><h3>Memory 1</h3><p>PlaceHolder</p></div>
-      <div class="mcard"><h3>Memory 2</h3><p>PlaceHolder</p></div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
     </div>
   </section>
 
   <!-- XAVIER -->
   <section class="panel g2" data-f="xavier" id="p-xavier"
-    data-song-title="We find love" data-song-artist="Daniel Caesar" data-sc="https://soundcloud.com/danielcaesar/we-find-love?si=98d308a731884a518d095bff6afd1ca5&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
+    data-song-title="We find love" data-song-artist="Daniel Caesar"
+    data-sc="https://soundcloud.com/danielcaesar/we-find-love?si=98d308a731884a518d095bff6afd1ca5">
     <img src="https://image2url.com/r2/default/images/1772492094195-20443d20-5370-4426-b9af-3018c543e43c.png" alt="Xavier" class="friend-photo">
     <div>
       <h2 class="friend-name">Xavier</h2>
@@ -405,6 +621,17 @@
       </div>
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"#needgrowthspurt"</p></div>
+    </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
     </div>
   </section>
 
@@ -424,6 +651,17 @@
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"PlaceHolder"</p></div>
     </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
   <!-- PRAVEEN -->
@@ -442,9 +680,26 @@
       <div class="tags"><span class="tag">Tag 1</span><span class="tag">Tag 2</span><span class="tag">Tag 3</span></div>
       <div class="quote-block"><p>"PlaceHolder"</p></div>
     </div>
+    <div class="gallery-section">
+      <div class="gallery-label">// Gallery</div>
+      <div class="gallery-grid">
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+        <div class="gallery-item empty">+ Add photo</div>
+      </div>
+    </div>
   </section>
 
 </main>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+</div>
 
 <!-- Hidden SoundCloud iframe -->
 <iframe id="sc-iframe" allow="autoplay" src=""></iframe>
@@ -465,24 +720,19 @@
       <div class="bar-song-artist" id="bar-artist">—</div>
     </div>
     <div class="ctrl-btns">
-      <!-- Shuffle -->
       <button class="ctrl-btn" id="btn-shuffle" title="Shuffle" onclick="toggleShuffle()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
       </button>
-      <!-- Prev -->
       <button class="ctrl-btn" title="Prev" onclick="prevTab()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg>
       </button>
-      <!-- Play/Pause -->
       <button class="ctrl-btn play-btn" id="btn-play" title="Play / Pause" onclick="togglePlay()">
         <svg id="icon-play"  width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         <svg id="icon-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
       </button>
-      <!-- Next -->
       <button class="ctrl-btn" title="Next" onclick="nextTab()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg>
       </button>
-      <!-- Loop -->
       <button class="ctrl-btn" id="btn-loop" title="Loop" onclick="toggleLoop()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
       </button>
@@ -497,27 +747,42 @@
   </div>
 </div>
 
-<!-- SoundCloud Widget API -->
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-const tabs   = [...document.querySelectorAll('.tab-btn')];
-const panels = [...document.querySelectorAll('.panel[data-f]')];
-const bar    = document.getElementById('music-bar');
+// ── Gallery lightbox ──
+document.querySelectorAll('.gallery-item:not(.empty) img').forEach(img => {
+  img.addEventListener('click', () => openLightbox(img.src));
+});
+
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// ── Player ──
+const tabs     = [...document.querySelectorAll('.tab-btn')];
+const panels   = [...document.querySelectorAll('.panel[data-f]')];
+const bar      = document.getElementById('music-bar');
 const scIframe = document.getElementById('sc-iframe');
 
 const accents = {
   miggy:'#b794f4', prince:'#ffd700', zack:'#4ecdc4', tim:'#fc8181',
-  jaden:'#68d391', aeo:'#f6ad55', matthew:'#63b3ed', lucas:'#f687b3',
-  leon:'#76e4f7', johan:'#d6bcfa', xavier:'#ff6b35', miguel:'#9ae6b4', praveen:'#fbb6ce'
+  jaden:'#68d391', aeo:'#f6ad55', zaire:'#e8a838', matthew:'#63b3ed',
+  lucas:'#f687b3', leon:'#76e4f7', johan:'#d6bcfa', xavier:'#ff6b35',
+  miguel:'#9ae6b4', praveen:'#fbb6ce'
 };
 
 let currentTabIndex = 0;
-let isShuffled = false;
-let isLooped   = false;
-let isMuted    = false;
-let isPlaying  = false;
-let widget     = null;
-let progressTimer = null;
+let isShuffled = false, isLooped = false, isMuted = false, isPlaying = false;
+let widget = null, progressTimer = null, isDragging = false, cachedDur = 0;
 
 function applyAccent(id) {
   const c = accents[id] || '#fff';
@@ -542,21 +807,20 @@ function startProgressPoll() {
   clearInterval(progressTimer);
   if (!widget) return;
   progressTimer = setInterval(() => {
+    if (isDragging) return;
     widget.getPosition(pos => {
-      widget.getDuration(dur => {
-        if (!dur) return;
-        const pct = (pos / dur) * 100;
-        document.getElementById('progress-fill').style.width = pct + '%';
-        document.getElementById('progress-thumb').style.left = pct + '%';
-        document.getElementById('bar-current').textContent = fmt(pos);
-        document.getElementById('bar-duration').textContent = fmt(dur);
-      });
+      if (!cachedDur) return;
+      const pct = (pos / cachedDur) * 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-thumb').style.left = pct + '%';
+      document.getElementById('bar-current').textContent = fmt(pos);
+      document.getElementById('bar-duration').textContent = fmt(cachedDur);
     });
-  }, 500);
+  }, 300);
 }
 
 function loadPanel(panel, friendId) {
-  const sc     = panel.dataset.sc     || '';
+  const sc     = panel.dataset.sc || '';
   const title  = panel.dataset.songTitle  || 'No song assigned';
   const artist = panel.dataset.songArtist || '—';
 
@@ -564,12 +828,12 @@ function loadPanel(panel, friendId) {
   document.getElementById('bar-artist').textContent = artist;
   applyAccent(friendId);
 
-  // Reset progress
   document.getElementById('progress-fill').style.width = '0%';
   document.getElementById('progress-thumb').style.left = '0%';
   document.getElementById('bar-current').textContent = '0:00';
   document.getElementById('bar-duration').textContent = '0:00';
   clearInterval(progressTimer);
+  cachedDur = 0;
 
   if (!sc) {
     bar.classList.add('no-song');
@@ -580,34 +844,27 @@ function loadPanel(panel, friendId) {
 
   bar.classList.remove('no-song');
 
-  // Build iframe src
   const embedUrl = 'https://w.soundcloud.com/player/?url=' +
     encodeURIComponent(sc) +
-    '&color=' + encodeURIComponent(accents[friendId] || '#ffffff').replace('#','%23') +
     '&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&buying=false&sharing=false&download=false&show_artwork=false';
 
   scIframe.src = embedUrl;
 
-  // Reinit widget after iframe loads
   scIframe.onload = () => {
     widget = SC.Widget(scIframe);
-
     widget.bind(SC.Widget.Events.READY, () => {
       widget.setVolume(parseInt(document.getElementById('vol-slider').value));
+      widget.getDuration(d => { cachedDur = d || 0; document.getElementById('bar-duration').textContent = fmt(cachedDur); });
       widget.play();
       setPlayingUI(true);
-      // Cache duration for instant drag seeking
-      widget.getDuration(d => { cachedDur = d || 0; });
       startProgressPoll();
     });
-
     widget.bind(SC.Widget.Events.PLAY,  () => setPlayingUI(true));
     widget.bind(SC.Widget.Events.PAUSE, () => setPlayingUI(false));
     widget.bind(SC.Widget.Events.FINISH, () => {
       setPlayingUI(false);
       clearInterval(progressTimer);
-      if (!isLooped) nextTab();
-      else { widget.seekTo(0); widget.play(); }
+      if (!isLooped) nextTab(); else { widget.seekTo(0); widget.play(); }
     });
   };
 
@@ -619,16 +876,15 @@ function sw(id, btn) {
   tabs.forEach(b => b.classList.remove('active','playing'));
   panels.forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
-  const panel = document.getElementById('p-' + id);
-  panel.classList.add('active');
+  document.getElementById('p-' + id).classList.add('active');
   currentTabIndex = tabs.indexOf(btn);
-  loadPanel(panel, id);
+  loadPanel(document.getElementById('p-' + id), id);
 }
 
 function togglePlay() {
   if (!widget || bar.classList.contains('no-song')) return;
   if (isPlaying) { widget.pause(); setPlayingUI(false); }
-  else           { widget.play();  setPlayingUI(true);  startProgressPoll(); }
+  else           { widget.play();  setPlayingUI(true); startProgressPoll(); }
 }
 
 function toggleShuffle() {
@@ -656,105 +912,70 @@ function setVolume(val) {
 }
 
 function prevTab() {
-  // If more than 3 seconds in, restart song. Otherwise go to previous tab.
   if (!widget) return;
   widget.getPosition(pos => {
-    if (pos > 3000) {
-      widget.seekTo(0);
-      cachedDur && startProgressPoll();
-    } else {
-      let idx = currentTabIndex - 1;
-      if (idx < 0) idx = tabs.length - 1;
-      tabs[idx].click();
-    }
+    if (pos > 3000) { widget.seekTo(0); }
+    else { let i = currentTabIndex - 1; if (i < 0) i = tabs.length - 1; tabs[i].click(); }
   });
 }
 
 function nextTab() {
-  let idx;
-  if (isShuffled) {
-    do { idx = Math.floor(Math.random() * tabs.length); } while (idx === currentTabIndex && tabs.length > 1);
-  } else {
-    idx = (currentTabIndex + 1) % tabs.length;
-  }
-  tabs[idx].click();
+  let i;
+  if (isShuffled) { do { i = Math.floor(Math.random() * tabs.length); } while (i === currentTabIndex && tabs.length > 1); }
+  else { i = (currentTabIndex + 1) % tabs.length; }
+  tabs[i].click();
 }
 
 // ── Draggable scrubber ──
 const progressTrack = document.getElementById('progress-track');
-let isDragging = false;
-let cachedDur  = 0;
 
-function cacheDuration() {
-  if (!widget) return;
-  widget.getDuration(d => { cachedDur = d || 0; });
-}
-
-function getPctFromEvent(e) {
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const rect = progressTrack.getBoundingClientRect();
-  return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+function getPct(e) {
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  const r = progressTrack.getBoundingClientRect();
+  return Math.max(0, Math.min(1, (x - r.left) / r.width));
 }
 
 function applyPct(pct) {
-  document.getElementById('progress-fill').style.width = (pct * 100) + '%';
-  document.getElementById('progress-thumb').style.left  = (pct * 100) + '%';
+  document.getElementById('progress-fill').style.width = (pct*100)+'%';
+  document.getElementById('progress-thumb').style.left  = (pct*100)+'%';
   document.getElementById('bar-current').textContent = fmt(pct * cachedDur);
 }
 
-function seekToPct(pct) {
-  if (!widget || !cachedDur) return;
-  widget.seekTo(pct * cachedDur);
-}
-
-// Mouse drag
 progressTrack.addEventListener('mousedown', e => {
   if (!widget || !cachedDur) return;
   isDragging = true;
   clearInterval(progressTimer);
-  applyPct(getPctFromEvent(e));
+  applyPct(getPct(e));
   e.preventDefault();
 });
 
-document.addEventListener('mousemove', e => {
-  if (!isDragging) return;
-  applyPct(getPctFromEvent(e));
-});
+document.addEventListener('mousemove', e => { if (isDragging) applyPct(getPct(e)); });
 
 document.addEventListener('mouseup', e => {
   if (!isDragging) return;
   isDragging = false;
-  seekToPct(getPctFromEvent(e));
+  if (widget && cachedDur) widget.seekTo(getPct(e) * cachedDur);
   if (isPlaying) startProgressPoll();
 });
 
-// Touch drag
 progressTrack.addEventListener('touchstart', e => {
   if (!widget || !cachedDur) return;
-  isDragging = true;
-  clearInterval(progressTimer);
-  applyPct(getPctFromEvent(e));
-  e.preventDefault();
-}, { passive: false });
+  isDragging = true; clearInterval(progressTimer); applyPct(getPct(e)); e.preventDefault();
+}, { passive:false });
 
-document.addEventListener('touchmove', e => {
-  if (!isDragging) return;
-  applyPct(getPctFromEvent(e));
-}, { passive: false });
+document.addEventListener('touchmove', e => { if (isDragging) applyPct(getPct(e)); }, { passive:false });
 
 document.addEventListener('touchend', e => {
   if (!isDragging) return;
   isDragging = false;
   const pct = parseFloat(document.getElementById('progress-fill').style.width) / 100;
-  seekToPct(pct);
+  if (widget && cachedDur) widget.seekTo(pct * cachedDur);
   if (isPlaying) startProgressPoll();
 });
 
-// Init on load
 window.addEventListener('DOMContentLoaded', () => {
   applyAccent('miggy');
-  const firstPanel = document.getElementById('p-miggy');
-  loadPanel(firstPanel, 'miggy');
+  loadPanel(document.getElementById('p-miggy'), 'miggy');
 });
 </script>
 </body>
